@@ -18,7 +18,7 @@ const studentDataRoutes = require('./routes/studentDataRoute');
 const app = express();
 
 app.use(cors({
-  origin: true,// replace with frontend URL
+  origin: "http://localhost:5173", // replace with frontend URL
   credentials: true,
 }));
 app.use(cookieParser());
@@ -36,7 +36,4 @@ app.use('/api/studentData',studentDataRoutes);
 
 
 const PORT = process.env.PORT || 5000;
-app.get("/", (req, res) => {
-  res.send("AceVihaari backend running.");
-});
-module.exports = app;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
