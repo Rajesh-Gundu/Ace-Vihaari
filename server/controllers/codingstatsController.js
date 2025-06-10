@@ -7,9 +7,12 @@ exports.getCodingStats = async(req,res) =>{
         const [rows] = await db.query(`
                 SELECT * FROM codingprofiles WHERE userID = ?`,[userID]
             );
-        
         const {leetcode, codechef, gfg} = rows[0];
-
+        console.log("leetcode",leetcode);
+        if(!leetcode || !codechef || !gfg){
+            console.log("did not find user coding profile details");
+            return res.status(404).json({message:"PLease enter all coding profile details in profile page"}); 
+        }
         try{
             const [response] = await db.query(`
                     SELECT * FROM leetcode WHERE userName = ?`,[leetcode]
