@@ -7,19 +7,7 @@ exports.createNotifications = async(req,res) => {
     console.log(req.body);
     const {branch,semester,section} = req.body.formData.targetAudience;
     try{
-        await db.query(`
-            INSERT INTO notifications (title,message,type,facultyID,action,actionLink,semester,branch,section,sender)
-            VALUES (?,?,?,?,?,?,?,?,?,?)`,
-            [title,message,type,userID,action,actionLink,semester,branch,JSON.stringify(section),userName],
-            (err,res)=>{
-                if(err){
-                    return res.status(500).json(err);
-                }
-            }
-        )
-        const [notificationID] = await db.query(`
-            SELECT MAX(id) FROM notifications;
-        `);
+
         let branches = '(';
         for(let b of branch) {
             branches += "'";
@@ -44,8 +32,22 @@ exports.createNotifications = async(req,res) => {
             sections += ',';
         }
         sections = sections.slice(0,sections.length-1) + ')';
-
         console.log(semesters,branches,sections);
+
+
+        await db.query(`
+            INSERT INTO notifications (title,message,type,facultyID,action,actionLink,semester,branch,section,sender)
+            VALUES (?,?,?,?,?,?,?,?,?,?)`,
+            [title,message,type,userID,action,actionLink,semesters,branches,sections,userName],
+            (err,res)=>{
+                if(err){
+                    return res.status(500).json(err);
+                }
+            }
+        )
+        const [notificationID] = await db.query(`
+            SELECT MAX(id) FROM notifications;
+        `);
 
         const [rows] = await db.query(`
             SELECT userID FROM academicInfo WHERE ${branch[0] == 'ALL' ? 'TRUE' : `branch IN ${branches}`} AND 
